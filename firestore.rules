@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: scores
+    // Document ID: auto-generated
+    // Fields:
+    //   - userId: string (required) - UID of the player
+    //   - userName: string (required) - Display name of the player
+    //   - score: number (required) - High score
+    //   - timestamp: timestamp (required) - When recorded
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "duxali78@duksung.ac.kr" && request.auth.token.email_verified == true));
+    }
+
+    function isValidScore(data) {
+      return data.userId is string &&
+             data.userName is string && data.userName.size() > 0 && data.userName.size() < 50 &&
+             data.score is number && data.score >= 0 &&
+             data.timestamp is timestamp;
+    }
+
+    match /scores/{scoreId} {
+      // Anyone can read scores for the leaderboard
+      allow read: if true;
+      
+      // Only authenticated users can create their own scores
+      allow create: if isAuthenticated() && 
+                    isValidScore(request.resource.data) && 
+                    request.resource.data.userId == request.auth.uid;
+      
+      // Scores are generally immutable in this game (new ones are created)
+      // but if we wanted to update, we'd check ownership
+      allow update: if isOwner(resource.data.userId) && 
+                    isValidScore(request.resource.data) &&
+                    request.resource.data.userId == resource.data.userId;
+                    
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) || isAdmin();
+    }
+  }
+}

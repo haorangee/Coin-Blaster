@@ -1,0 +1,5 @@
+{
+  "name": "Coin Blaster",
+  "description": "A fast-paced arcade shooting game where you blast coins to climb the leaderboard.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,35 @@
+{
+  "entities": {
+    "Score": {
+      "title": "Score",
+      "description": "A player's high score in the game.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The UID of the player."
+        },
+        "userName": {
+          "type": "string",
+          "description": "The display name of the player."
+        },
+        "score": {
+          "type": "number",
+          "description": "The high score achieved."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the score was recorded."
+        }
+      },
+      "required": ["userId", "userName", "score", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/scores/{scoreId}": {
+      "schema": "Score",
+      "description": "Global leaderboard scores."
+    }
+  }
+}
