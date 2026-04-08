@@ -1,8 +1,27 @@
 node_modules/
-build/
 dist/
+build/
 coverage/
 .DS_Store
 *.log
 .env*
 !.env.example
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Firebase configuration (contains API keys)
+firebase-applet-config.json
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+db.sqlite3
